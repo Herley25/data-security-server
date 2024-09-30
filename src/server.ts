@@ -1,5 +1,4 @@
 import fastify from 'fastify'
-import fastifyHelmet from 'fastify-helmet'
 import {
   serializerCompiler,
   validatorCompiler,
@@ -12,6 +11,7 @@ import {
   getUserByIdRoute,
   updateUserRoute,
 } from './routes/user-routes'
+import fastifyHelmet from '@fastify/helmet'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
