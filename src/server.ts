@@ -33,6 +33,19 @@ app.register(updateUserRoute)
 // Rota para deletar um usuário
 app.register(deleteUserRoute)
 
+// Configuração básica do helmet com Content Security Policy (CSP)
+app.register(fastifyHelmet, {
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"], // Permite apenas o carregamento de recursos do mesmo domínio
+      styleSrc: ["'self'", 'stackpath.bootstrapcdn.com'], // Permite estilos internos e do mesmo domínio
+      scriptSrc: ["'self'", 'unsafe-inline', 'code.jquery.com'], // Permite scripts internos e do mesmo domínio
+      objectSrc: ["'none'"], // Bloqueia objetos de Flash e outros
+      upgradeInsecureRequests: [], // Força o navegador a acessar o site via HTTPS
+    },
+  },
+})
+
 app.listen({ port: 3001 }).then(() => {
   console.log('HTTP server is running')
 })
