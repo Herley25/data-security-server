@@ -12,6 +12,7 @@ import {
   updateUserRoute,
 } from './routes/user-routes'
 import fastifyHelmet from '@fastify/helmet'
+import { checkUrlRoute } from './routes/check-url-route'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -33,13 +34,16 @@ app.register(updateUserRoute)
 // Rota para deletar um usuário
 app.register(deleteUserRoute)
 
+// Rota para verificar a segurança de uma URL
+app.register(checkUrlRoute)
+
 // Configuração básica do helmet com Content Security Policy (CSP)
 app.register(fastifyHelmet, {
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"], // Permite apenas o carregamento de recursos do mesmo domínio
       styleSrc: ["'self'", 'stackpath.bootstrapcdn.com'], // Permite estilos internos e do mesmo domínio
-      scriptSrc: ["'self'", 'unsafe-inline', 'code.jquery.com'], // Permite scripts internos e do mesmo domínio
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Permite scripts internos e do mesmo domínio
       objectSrc: ["'none'"], // Bloqueia objetos de Flash e outros
       upgradeInsecureRequests: [], // Força o navegador a acessar o site via HTTPS
     },
