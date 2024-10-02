@@ -13,6 +13,9 @@ import {
 } from './routes/user-routes'
 import fastifyHelmet from '@fastify/helmet'
 import { checkUrlRoute } from './routes/check-url-route'
+import fastifyJwt from '@fastify/jwt'
+import { authRoutes } from './routes/auth-routes'
+import { env } from './env'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -37,6 +40,9 @@ app.register(deleteUserRoute)
 // Rota para verificar a segurança de uma URL
 app.register(checkUrlRoute)
 
+// Rota para autenticação de usuários
+app.register(authRoutes)
+
 // Configuração básica do helmet com Content Security Policy (CSP)
 app.register(fastifyHelmet, {
   contentSecurityPolicy: {
@@ -48,6 +54,11 @@ app.register(fastifyHelmet, {
       upgradeInsecureRequests: [], // Força o navegador a acessar o site via HTTPS
     },
   },
+})
+
+// Registro do plugin JWT com a chave secreta
+app.register(fastifyJwt, {
+  secret: env.JWT_SECRET || 'super secret',
 })
 
 app.listen({ port: 3001 }).then(() => {
