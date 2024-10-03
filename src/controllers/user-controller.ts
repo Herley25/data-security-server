@@ -3,6 +3,8 @@ import { users } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import z from 'zod'
+import { encryptData } from '../functions/encrypt-data'
+import { decryptData } from '../functions/decrypt-data'
 
 const createUserSchema = z.object({
   username: z.string().min(3).max(255),
@@ -64,11 +66,14 @@ export const createUser = async ({
     } // Se os dados não forem válidos, lança um erro
 
     const hashedPassword = await bcrypt.hash(password, 10) // Hash da senha
+
+    const encryptedEmail = encryptData(email) // Criptografa o email
+
     const [user] = await db
       .insert(users)
       .values({
         username,
-        email,
+        email: encryptedEmail, // Salva o email criptografado
         password: hashedPassword,
       })
       .returning() // Opcional: retorna o registro recém-criado
@@ -88,7 +93,7 @@ export const getUserById = async ({ id }: GetUserByIdRequest) => {
     if (!validatedData.success) {
       throw new Error('Invalid data')
     } // Se os dados não forem válidos, lança um erro
-    const user = await db
+    const [user] = await db
       .select({
         id: users.id,
         username: users.username,
@@ -100,7 +105,12 @@ export const getUserById = async ({ id }: GetUserByIdRequest) => {
       .where(eq(users.id, id))
       .limit(1)
 
-    return user // Retorna o usuário ou null se não encontrado
+    const descryptedEmail = decryptData(user.email) // Descriptografa o email
+
+    return {
+      ...user,
+      email: descryptedEmail, // Retorna o email descriptografado
+    } // Retorna o usuário ou null se não encontrado
   } catch (error) {
     console.error('Error fetching user:', error)
     throw new Error('Failed to fetch user')

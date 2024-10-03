@@ -5,6 +5,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   GOOGLE_SAFE_BROWSING_API_KEY: z.string(),
   JWT_SECRET: z.string(),
+  ENCRYPTION_KEY: z.string(),
+  ENCRYPTION_IV: z.string(),
 })
 
 export const env = envSchema.parse(process.env)

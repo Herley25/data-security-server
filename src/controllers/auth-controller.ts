@@ -4,6 +4,7 @@ import { users } from '../db/schema'
 import bcrypt from 'bcryptjs'
 import z from 'zod'
 import type { FastifyInstance } from 'fastify'
+import * as crypto from 'node:crypto'
 
 const loginSchema = z.object({
   username: z.string(),
